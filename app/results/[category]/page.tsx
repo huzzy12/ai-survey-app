@@ -71,12 +71,13 @@ const categories = {
 
 type Category = keyof typeof categories
 
-export default function ResultsPage({
-  params,
-}: {
-  params: { category: string }
-}) {
-  const category = categories[params.category as Category]
+interface Props {
+  params: { category: Category }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export default function ResultsPage({ params, searchParams }: Props) {
+  const category = categories[params.category]
 
   if (!category) {
     notFound()
