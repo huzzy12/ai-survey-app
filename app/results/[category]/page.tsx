@@ -41,36 +41,44 @@ const categories = {
     description: [
       "You've identified a massive opportunity for transformation. Your business has the perfect foundation for AI automation implementation.",
       "Here's what's interesting: Companies at your automation stage typically see the fastest ROI from AI implementation - often 300% or more in the first year.",
-      "I specialize in helping Growth Seekers achieve these results without disrupting their current operations.",
+      "I specialize in helping Growth Seekers like you implement the right automation solutions for maximum impact.",
     ],
-    sessionType: "Automation Discovery Session",
+    sessionType: "Free Growth Strategy Session",
     bulletPoints: [
-      "Low-hanging opportunities specific to your business",
-      "The exact first steps to start your automation journey",
-      "Risk-free implementation strategy with guaranteed ROI",
+      "Identify your highest-impact automation opportunities",
+      "Custom implementation plan for your business",
+      "Expected ROI calculation for each solution",
     ],
-    urgencyMessage: "Next week's sessions are filling up - Secure your spot now!",
+    urgencyMessage: "Limited availability this week - Book now!",
   },
   "transformation-aspirant": {
-    title: "Welcome, Transformation Aspirant!",
-    subtitle: "Congratulations on taking the first step toward business transformation!",
+    title: "Excellent First Step!",
+    subtitle: "You're Ready for Transformation",
     description: [
-      "Your willingness to explore AI automation puts you ahead of 60% of businesses that haven't even started.",
-      "Here's something surprising: Businesses at your stage often achieve the most dramatic results from AI automation - we're talking 500%+ ROI in year one.",
-      "Why? Because every automation you implement creates compound benefits across your entire operation.",
+      "You've just taken the most important step: Recognizing the power of AI automation for your business.",
+      "Here's something fascinating: Businesses at your stage often see the most dramatic improvements - we're talking 5x efficiency gains in year one.",
+      "I specialize in helping businesses like yours implement the right automation solutions without disrupting your current operations.",
     ],
-    sessionType: "Transformation Strategy Session",
+    sessionType: "Free Transformation Strategy Session",
     bulletPoints: [
-      "The easiest automation to implement for immediate results",
-      "Customized, risk-free roadmap to digital transformation",
-      "Guaranteed ROI calculation for your first project",
+      "Risk-free automation implementation strategy",
+      "Quick-win opportunities for immediate results",
+      "Step-by-step transformation roadmap",
     ],
-    urgencyMessage: "Only 3 transformation sessions available - Reserve yours now!",
+    urgencyMessage: "Limited spots for new clients - Reserve yours now!",
   },
+} as const
+
+type Category = keyof typeof categories
+
+interface PageProps {
+  params: {
+    category: Category
+  }
 }
 
-export default function ResultsPage({ params }: { params: { category: string } }) {
-  const category = categories[params.category as keyof typeof categories]
+export default function ResultsPage({ params }: PageProps) {
+  const category = categories[params.category]
 
   if (!category) {
     notFound()
