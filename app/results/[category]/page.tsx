@@ -71,13 +71,11 @@ const categories = {
 
 type Category = keyof typeof categories
 
-type Props = {
-  params: {
-    category: string
-  }
-}
-
-export default async function ResultsPage({ params }: Props) {
+export default function ResultsPage({
+  params,
+}: {
+  params: { category: string }
+}) {
   const category = categories[params.category as Category]
 
   if (!category) {
