@@ -71,14 +71,15 @@ const categories = {
 
 type Category = keyof typeof categories
 
-interface PageProps {
+type Props = {
   params: {
-    category: Category
+    category: string
   }
+  searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export default function ResultsPage({ params }: PageProps) {
-  const category = categories[params.category]
+export default async function ResultsPage({ params, searchParams }: Props) {
+  const category = categories[params.category as Category]
 
   if (!category) {
     notFound()
