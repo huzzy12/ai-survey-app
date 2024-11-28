@@ -75,10 +75,9 @@ type Props = {
   params: {
     category: string
   }
-  searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export default async function ResultsPage({ params, searchParams }: Props) {
+export default async function ResultsPage({ params }: Props) {
   const category = categories[params.category as Category]
 
   if (!category) {
