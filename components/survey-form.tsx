@@ -164,26 +164,29 @@ export default function SurveyForm() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const score = calculateScore()
-    const category = getCategory(score)
+    e.preventDefault();
+    const score = calculateScore();
+    const category = getCategory(score);
 
     try {
       const response = await fetch("/api/submit-survey", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers, email, score, category }),
-      })
+        body: JSON.stringify({ email, answers, score, category }),
+      });
 
-      if (response.ok) {
-        router.push(`/results/${category}`)
-      } else {
-        console.error('Failed to submit survey:', await response.text())
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.details || 'Failed to submit survey');
       }
+
+      router.push(`/results/${category}`);
     } catch (error) {
-      console.error("Error submitting survey:", error)
+      const err = error as Error;
+      console.error("Error submitting survey:", err.message);
+      throw error;
     }
-  }
+  };
 
   const calculateProgress = () => {
     return showEmail ? 100 : ((currentQuestion + 1) / questions.length) * 100

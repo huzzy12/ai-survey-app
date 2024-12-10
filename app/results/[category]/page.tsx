@@ -1,8 +1,25 @@
-import Link from "next/link"
-import { notFound } from "next/navigation"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Metadata } from 'next';
 
-const categories = {
+// First, let's define proper types for our category data
+
+type Category = {
+  title: string;
+  subtitle: string;
+  description: string[];
+  bulletPoints: string[];
+  urgencyMessage: string;
+  sessionType: string;
+};
+
+// Type for our categories object
+
+type Categories = {
+  [key: string]: Category;
+};
+
+const localCategories: Categories = {
   "efficiency-optimizer": {
     title: "Congrats, Efficiency Champion!",
     subtitle: "You're among the top 3% of businesses leveraging automation and AI.",
@@ -11,13 +28,13 @@ const categories = {
       "But here's what most Efficiency Champions don't realize: There's still untapped potential in your automation strategy that could double your current efficiency gains.",
       "Want to discover these advanced automation strategies? I help companies like yours unlock an additional 30% productivity boost through strategic AI implementation.",
     ],
-    sessionType: "Free Strategy Session",
     bulletPoints: [
       "Advanced AI integration opportunities unique to market leaders",
       "Predictive analytics implementation for decision-making",
       "Custom automation solutions for complex workflows",
     ],
     urgencyMessage: "Demand is through the roof these days - Reserve your spot now!",
+    sessionType: "Free Strategy Session",
   },
   "tech-savvy-optimizer": {
     title: "Well Done, Tech-Savvy Optimizer!",
@@ -27,13 +44,13 @@ const categories = {
       "Here's the exciting part: You're perfectly positioned to leverage AI automation for exponential growth. The gap between where you are and market leaders is smaller than you think.",
       "I help Tech-Savvy Optimizers like you bridge this gap in just 90 days.",
     ],
-    sessionType: "Free Automation Acceleration Session",
     bulletPoints: [
       "Quick-win automation opportunities specific to your score",
       "Strategic implementation roadmap for rapid results",
       "ROI calculation for your next automation project",
     ],
-    urgencyMessage: "Only 5 spots available this week - Claim yours now!",
+    urgencyMessage: "Don't wait! Take action now to secure your future success.",
+    sessionType: "Free Automation Acceleration Session",
   },
   "growth-seeker": {
     title: "Great Job, Growth Seeker!",
@@ -43,13 +60,13 @@ const categories = {
       "Here's what's interesting: Companies at your automation stage typically see the fastest ROI from AI implementation - often 300% or more in the first year.",
       "I specialize in helping Growth Seekers like you implement the right automation solutions for maximum impact.",
     ],
-    sessionType: "Free Growth Strategy Session",
     bulletPoints: [
       "Identify your highest-impact automation opportunities",
       "Custom implementation plan for your business",
       "Expected ROI calculation for each solution",
     ],
     urgencyMessage: "Limited availability this week - Book now!",
+    sessionType: "Free Growth Strategy Session",
   },
   "transformation-aspirant": {
     title: "Excellent First Step!",
@@ -59,28 +76,43 @@ const categories = {
       "Here's something fascinating: Businesses at your stage often see the most dramatic improvements - we're talking 5x efficiency gains in year one.",
       "I specialize in helping businesses like yours implement the right automation solutions without disrupting your current operations.",
     ],
-    sessionType: "Free Transformation Strategy Session",
     bulletPoints: [
       "Risk-free automation implementation strategy",
       "Quick-win opportunities for immediate results",
       "Step-by-step transformation roadmap",
     ],
     urgencyMessage: "Limited spots for new clients - Reserve yours now!",
+    sessionType: "Free Transformation Strategy Session",
   },
-} as const
+};
 
-type Category = keyof typeof categories
-
-interface Props {
-  params: { category: Category }
-  searchParams: { [key: string]: string | string[] | undefined }
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ category: string }> 
+}): Promise<Metadata> {
+  const { category } = await params;
+  const categoryKey = category as keyof typeof localCategories;
+  const categoryData = localCategories[categoryKey];
+  
+  if (!categoryData) {
+    return { title: "Not Found" };
+  }
+  
+  return { title: categoryData.title };
 }
 
-export default function ResultsPage({ params, searchParams }: Props) {
-  const category = categories[params.category]
+export default async function ResultsPage({ 
+  params 
+}: { 
+  params: Promise<{ category: string }> 
+}) {
+  const { category } = await params;
+  const categoryKey = category as keyof typeof localCategories;
+  const categoryData = localCategories[categoryKey] as Category;
 
-  if (!category) {
-    notFound()
+  if (!categoryData) {
+    return <div>Category not found</div>;
   }
 
   return (
@@ -88,13 +120,13 @@ export default function ResultsPage({ params, searchParams }: Props) {
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="space-y-4">
           <h1 className="text-4xl sm:text-5xl font-bold text-[#FF6B35]">
-            {category.title}
+            {categoryData.title}
           </h1>
-          <p className="text-xl text-[#FF6B35]">{category.subtitle}</p>
+          <p className="text-xl text-[#FF6B35]">{categoryData.subtitle}</p>
         </div>
 
         <div className="space-y-6">
-          {category.description.map((paragraph, index) => (
+          {categoryData.description.map((paragraph, index) => (
             <p key={index} className="text-lg leading-relaxed">
               {paragraph}
             </p>
@@ -103,14 +135,10 @@ export default function ResultsPage({ params, searchParams }: Props) {
 
         <div className="space-y-4">
           <p className="text-lg">
-            Book your{" "}
-            <span className="text-[#FF6B35] font-semibold">
-              {category.sessionType}
-            </span>{" "}
-            to discover:
+            Book your
           </p>
           <ul className="space-y-3">
-            {category.bulletPoints.map((point, index) => (
+            {categoryData.bulletPoints.map((point, index) => (
               <li key={index} className="flex items-start space-x-2">
                 <span className="text-[#FF6B35] mt-1.5">•</span>
                 <span>{point}</span>
@@ -131,10 +159,16 @@ export default function ResultsPage({ params, searchParams }: Props) {
             </Button>
           </Link>
           <p className="text-center text-sm italic">
-            ({category.urgencyMessage})
+            ({categoryData.urgencyMessage})
           </p>
         </div>
       </div>
     </main>
-  )
+  );
+}
+
+export async function generateStaticParams() {
+  return Object.keys(localCategories).map((category) => ({
+    category: category,
+  }));
 }
