@@ -134,7 +134,7 @@ export default async function ResultsPage({
         </div>
 
         <div className="mt-8">
-          <h3 className="text-xl font-semibold text-white mb-4">What we'll explore:</h3>
+          <h3 className="text-xl font-semibold text-white mb-4">What we&apos;ll explore:</h3>
           <ul className="space-y-2">
             {categoryData.bulletPoints.map((point, index) => (
               <li key={index} className="flex items-start text-gray-300">
