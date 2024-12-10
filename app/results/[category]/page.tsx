@@ -11,6 +11,7 @@ type Category = {
   bulletPoints: string[];
   urgencyMessage: string;
   sessionType: string;
+  ctaText: string;
 };
 
 // Type for our categories object
@@ -20,7 +21,7 @@ type Categories = {
 };
 
 const localCategories: Categories = {
-  "efficiency-optimizer": {
+  "efficiency-champion": {
     title: "Congrats, Efficiency Champion!",
     subtitle: "You're among the top 3% of businesses leveraging automation and AI.",
     description: [
@@ -30,11 +31,12 @@ const localCategories: Categories = {
     ],
     bulletPoints: [
       "Advanced AI integration opportunities unique to market leaders",
-      "Predictive analytics implementation for decision-making",
+      "AI agents for specialized tasks trained on your proprietary data",
       "Custom automation solutions for complex workflows",
     ],
     urgencyMessage: "Demand is through the roof these days - Reserve your spot now!",
     sessionType: "Free Strategy Session",
+    ctaText: "Book your",
   },
   "tech-savvy-optimizer": {
     title: "Well Done, Tech-Savvy Optimizer!",
@@ -51,6 +53,7 @@ const localCategories: Categories = {
     ],
     urgencyMessage: "Don't wait! Take action now to secure your future success.",
     sessionType: "Free Automation Acceleration Session",
+    ctaText: "Book your",
   },
   "growth-seeker": {
     title: "Great Job, Growth Seeker!",
@@ -67,9 +70,10 @@ const localCategories: Categories = {
     ],
     urgencyMessage: "Limited availability this week - Book now!",
     sessionType: "Free Growth Strategy Session",
+    ctaText: "Book your",
   },
   "transformation-aspirant": {
-    title: "Excellent First Step!",
+    title: "Excellent First Step, Transformation Aspirant!",
     subtitle: "You're Ready for Transformation",
     description: [
       "You've just taken the most important step: Recognizing the power of AI automation for your business.",
@@ -83,6 +87,7 @@ const localCategories: Categories = {
     ],
     urgencyMessage: "Limited spots for new clients - Reserve yours now!",
     sessionType: "Free Transformation Strategy Session",
+    ctaText: "Book your",
   },
 };
 
@@ -122,32 +127,25 @@ export default async function ResultsPage({
           <h1 className="text-4xl sm:text-5xl font-bold text-[#FF6B35]">
             {categoryData.title}
           </h1>
-          <p className="text-xl text-[#FF6B35]">{categoryData.subtitle}</p>
-        </div>
-
-        <div className="space-y-6">
-          {categoryData.description.map((paragraph, index) => (
-            <p key={index} className="text-lg leading-relaxed">
-              {paragraph}
-            </p>
+          <h2 className="text-2xl font-semibold text-white">{categoryData.subtitle}</h2>
+          {categoryData.description.map((desc, index) => (
+            <p key={index} className="text-gray-300">{desc}</p>
           ))}
         </div>
 
-        <div className="space-y-4">
-          <p className="text-lg">
-            Book your
-          </p>
-          <ul className="space-y-3">
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold text-white mb-4">What we'll explore:</h3>
+          <ul className="space-y-2">
             {categoryData.bulletPoints.map((point, index) => (
-              <li key={index} className="flex items-start space-x-2">
-                <span className="text-[#FF6B35] mt-1.5">•</span>
+              <li key={index} className="flex items-start text-gray-300">
+                <span className="mr-2 mt-1.5">•</span>
                 <span>{point}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="space-y-4">
+        <div className="mt-8">
           <Link
             href="https://calendly.com/huzaifainspires/discovery-call"
             target="_blank"
@@ -155,10 +153,10 @@ export default async function ResultsPage({
             className="block"
           >
             <Button className="w-full bg-[#FF6B35] hover:bg-[#FF6B35]/90 text-white py-6 text-lg">
-              Book Your Session Now
+              Book Your FREE Session Now!
             </Button>
           </Link>
-          <p className="text-center text-sm italic">
+          <p className="text-[#FF6B35] text-center italic mt-4">
             ({categoryData.urgencyMessage})
           </p>
         </div>

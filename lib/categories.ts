@@ -13,7 +13,8 @@ export const categories = {
       "Predictive analytics implementation for decision-making",
       "Custom automation solutions for complex workflows"
     ],
-    urgencyMessage: "Demand is through the roof these days - Reserve your spot now!"
+    urgencyMessage: "Demand is through the roof these days - Reserve your spot now!",
+    ctaText: "Ready to maximize your efficiency? Let's explore your"
   },
   "tech-savvy-optimizer": {
     title: "Well Done, Tech-Savvy Optimizer!",
@@ -29,9 +30,10 @@ export const categories = {
       "Strategic implementation roadmap for rapid results",
       "ROI calculation for your next automation project"
     ],
-    urgencyMessage: "Don't wait! Take action now to secure your future success."
+    urgencyMessage: "Don't wait! Take action now to secure your future success.",
+    ctaText: "Ready to optimize your tech stack? Book your"
   },
-"growth-seeker": {
+  "growth-seeker": {
     title: "Great Job, Growth Seeker!",
     subtitle: "You're on the right path!",
     description: [
@@ -46,6 +48,7 @@ export const categories = {
       "Expected ROI calculation for each solution",
     ],
     urgencyMessage: "Limited availability this week - Book now!",
+    ctaText: "Ready to accelerate your growth? Schedule your"
   },
   "transformation-aspirant": {
     title: "Excellent First Step!",
@@ -61,6 +64,7 @@ export const categories = {
       "Quick-win opportunities for immediate results",
       "Step-by-step transformation roadmap",
     ],
-    urgencyMessage: "Limited spots for new clients - Reserve yours now!"
-},
+    urgencyMessage: "Limited spots for new clients - Reserve yours now!",
+    ctaText: "Ready to transform your business? Book your"
+  },
 }
