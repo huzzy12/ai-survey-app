@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Metadata } from 'next';
 
-// First, let's define proper types for our category data
 type Category = {
   title: string;
   subtitle: string;
@@ -13,18 +12,22 @@ type Category = {
   ctaText: string;
 };
 
-// Type for our categories object
 type Categories = {
   [key: string]: Category;
+};
+
+type Props = {
+  params: Promise<{ category: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 const localCategories: Categories = {
   "efficiency-champion": {
     title: "Congrats, Efficiency Champion!",
-    subtitle: "You're among the top 3% of businesses leveraging automation and AI.",
+    subtitle: "You&apos;re among the top 3% of businesses leveraging automation and AI.",
     description: [
       "Your sophisticated approach to digital transformation positions you perfectly for exponential growth.",
-      "But here's what most Efficiency Champions don't realize: There's still untapped potential in your automation strategy that could double your current efficiency gains.",
+      "But here&apos;s what most Efficiency Champions don&apos;t realize: There&apos;s still untapped potential in your automation strategy that could double your current efficiency gains.",
       "Want to discover these advanced automation strategies? I help companies like yours unlock an additional 30% productivity boost through strategic AI implementation.",
     ],
     bulletPoints: [
@@ -40,8 +43,8 @@ const localCategories: Categories = {
     title: "Well Done, Tech-Savvy Optimizer!",
     subtitle: "Impressive!",
     description: [
-      "Your business shows strong potential for AI automation excellence. You're already ahead of 72% of businesses in your industry.",
-      "Here's the exciting part: You're perfectly positioned to leverage AI automation for exponential growth. The gap between where you are and market leaders is smaller than you think.",
+      "Your business shows strong potential for AI automation excellence. You&apos;re already ahead of 72% of businesses in your industry.",
+      "Here&apos;s the exciting part: You&apos;re perfectly positioned to leverage AI automation for exponential growth. The gap between where you are and market leaders is smaller than you think.",
       "I help Tech-Savvy Optimizers like you bridge this gap in just 90 days.",
     ],
     bulletPoints: [
@@ -49,16 +52,16 @@ const localCategories: Categories = {
       "Strategic implementation roadmap for rapid results",
       "ROI calculation for your next automation project",
     ],
-    urgencyMessage: "Don't wait! Take action now to secure your future success.",
+    urgencyMessage: "Don&apos;t wait! Take action now to secure your future success.",
     sessionType: "Free Automation Acceleration Session",
     ctaText: "Book your",
   },
   "growth-seeker": {
     title: "Great Job, Growth Seeker!",
-    subtitle: "You're on the right path!",
+    subtitle: "You&apos;re on the right path!",
     description: [
-      "You've identified a massive opportunity for transformation. Your business has the perfect foundation for AI automation implementation.",
-      "Here's what's interesting: Companies at your automation stage typically see the fastest ROI from AI implementation - often 300% or more in the first year.",
+      "You&apos;ve identified a massive opportunity for transformation. Your business has the perfect foundation for AI automation implementation.",
+      "Here&apos;s what&apos;s interesting: Companies at your automation stage typically see the fastest ROI from AI implementation - often 300% or more in the first year.",
       "I specialize in helping Growth Seekers like you implement the right automation solutions for maximum impact.",
     ],
     bulletPoints: [
@@ -72,10 +75,10 @@ const localCategories: Categories = {
   },
   "transformation-aspirant": {
     title: "Excellent First Step, Transformation Aspirant!",
-    subtitle: "You're Ready for Transformation",
+    subtitle: "You&apos;re Ready for Transformation",
     description: [
-      "You've just taken the most important step: Recognizing the power of AI automation for your business.",
-      "Here's something fascinating: Businesses at your stage often see the most dramatic improvements - we're talking 5x efficiency gains in year one.",
+      "You&apos;ve just taken the most important step: Recognizing the power of AI automation for your business.",
+      "Here&apos;s something fascinating: Businesses at your stage often see the most dramatic improvements - we&apos;re talking 5x efficiency gains in year one.",
       "I specialize in helping businesses like yours implement the right automation solutions without disrupting your current operations.",
     ],
     bulletPoints: [
@@ -92,9 +95,10 @@ const localCategories: Categories = {
 export async function generateMetadata({ 
   params 
 }: { 
-  params: { category: string }
+  params: Promise<{ category: string }> 
 }): Promise<Metadata> {
-  const categoryData = localCategories[params.category];
+  const resolvedParams = await params;
+  const categoryData = localCategories[resolvedParams.category];
   
   if (!categoryData) {
     return { title: "Not Found" };
@@ -103,15 +107,14 @@ export async function generateMetadata({
   return { title: categoryData.title };
 }
 
-export default function ResultsPage({ 
-  params,
-  searchParams,
-}: { 
-  params: { category: string },
-  searchParams: { score: string }
-}) {
-  const categoryData = localCategories[params.category];
-  const score = parseInt(searchParams.score) || 0;
+export default async function ResultsPage({ params, searchParams }: Props) {
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  
+  const categoryData = localCategories[resolvedParams.category];
+  const score = typeof resolvedSearchParams.score === 'string' 
+    ? parseInt(resolvedSearchParams.score) 
+    : 0;
 
   if (!categoryData) {
     return <div>Category not found</div>;
@@ -147,7 +150,7 @@ export default function ResultsPage({
         </div>
 
         <div className="mt-8">
-          <h3 className="text-xl font-semibold text-white mb-4">What we'll explore:</h3>
+          <h3 className="text-xl font-semibold text-white mb-4">What we&apos;ll explore:</h3>
           <ul className="space-y-2">
             {categoryData.bulletPoints.map((point, index) => (
               <li key={index} className="flex items-start text-gray-300">
@@ -180,6 +183,6 @@ export default function ResultsPage({
 
 export async function generateStaticParams() {
   return Object.keys(localCategories).map((category) => ({
-    category: category,
+    category,
   }));
 }
