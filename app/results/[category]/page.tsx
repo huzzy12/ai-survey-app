@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Metadata } from 'next';
 
 // First, let's define proper types for our category data
-
 type Category = {
   title: string;
   subtitle: string;
@@ -15,7 +14,6 @@ type Category = {
 };
 
 // Type for our categories object
-
 type Categories = {
   [key: string]: Category;
 };
@@ -94,11 +92,9 @@ const localCategories: Categories = {
 export async function generateMetadata({ 
   params 
 }: { 
-  params: Promise<{ category: string }> 
+  params: { category: string }
 }): Promise<Metadata> {
-  const { category } = await params;
-  const categoryKey = category as keyof typeof localCategories;
-  const categoryData = localCategories[categoryKey];
+  const categoryData = localCategories[params.category];
   
   if (!categoryData) {
     return { title: "Not Found" };
@@ -107,14 +103,15 @@ export async function generateMetadata({
   return { title: categoryData.title };
 }
 
-export default async function ResultsPage({ 
-  params 
+export default function ResultsPage({ 
+  params,
+  searchParams,
 }: { 
-  params: Promise<{ category: string }> 
+  params: { category: string },
+  searchParams: { score: string }
 }) {
-  const { category } = await params;
-  const categoryKey = category as keyof typeof localCategories;
-  const categoryData = localCategories[categoryKey] as Category;
+  const categoryData = localCategories[params.category];
+  const score = parseInt(searchParams.score) || 0;
 
   if (!categoryData) {
     return <div>Category not found</div>;
@@ -128,13 +125,29 @@ export default async function ResultsPage({
             {categoryData.title}
           </h1>
           <h2 className="text-2xl font-semibold text-white">{categoryData.subtitle}</h2>
+          
+          {/* Score Display */}
+          <div className="bg-white/10 rounded-lg p-6 my-8">
+            <h2 className="text-3xl font-bold text-white mb-4">Your Automation Readiness Score</h2>
+            <div className="relative h-4 bg-gray-300 rounded-full">
+              <div 
+                className="absolute h-4 bg-[#FF6B35] rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${score}%` }}
+              />
+            </div>
+            <div className="mt-2 text-center">
+              <span className="text-4xl font-bold text-[#FF6B35]">{score}</span>
+              <span className="text-2xl text-white">/100</span>
+            </div>
+          </div>
+
           {categoryData.description.map((desc, index) => (
             <p key={index} className="text-gray-300">{desc}</p>
           ))}
         </div>
 
         <div className="mt-8">
-          <h3 className="text-xl font-semibold text-white mb-4">What we&apos;ll explore:</h3>
+          <h3 className="text-xl font-semibold text-white mb-4">What we'll explore:</h3>
           <ul className="space-y-2">
             {categoryData.bulletPoints.map((point, index) => (
               <li key={index} className="flex items-start text-gray-300">

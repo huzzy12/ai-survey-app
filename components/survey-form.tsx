@@ -1,12 +1,11 @@
-"use client"
-
+"use client";
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
 import { Input } from "@/components/ui/input"
-import { CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
+import { CardContent } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
 
 const questions = [
   {
@@ -121,7 +120,6 @@ export default function SurveyForm() {
 
   const handleAnswerChange = (answer: string | string[]) => {
     setAnswers(prev => ({ ...prev, [currentQuestion]: answer }))
-    // For non-multiselect questions, automatically move to next question except for the last question
     if (!questions[currentQuestion].multiSelect && currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1)
     }
@@ -144,49 +142,65 @@ export default function SurveyForm() {
   }
 
   const calculateScore = () => {
-    return Object.entries(answers).reduce((score, [questionIndex, answer]) => {
+    const rawScore = Object.entries(answers).reduce((score, [questionIndex, answer]) => {
       const question = questions[Number(questionIndex)]
       if (Array.isArray(answer)) {
         // For multi-select questions, sum the scores of selected options
-        return score + answer.length
+        const selectedOptions = question.options.filter(option => answer.includes(option.text))
+        return score + selectedOptions.reduce((sum, option) => sum + option.score, 0)
       } else {
         const selectedOption = question.options.find(option => option.text === answer)
         return score + (selectedOption?.score || 0)
       }
     }, 0)
+
+    // Calculate maximum possible score
+    const maxScore = questions.reduce((total, question) => {
+      if (question.multiSelect) {
+        // For multi-select, max is sum of all option scores
+        return total + question.options.reduce((sum, option) => sum + option.score, 0)
+      } else {
+        // For single select, max is highest option score
+        return total + Math.max(...question.options.map(option => option.score))
+      }
+    }, 0)
+
+    // Convert to percentage
+    return Math.round((rawScore / maxScore) * 100)
   }
 
   const getCategory = (score: number) => {
-    if (score <= 11) return "transformation-aspirant"
-    if (score <= 22) return "growth-seeker"
-    if (score <= 33) return "tech-savvy-optimizer"
-    return "efficiency-optimizer"
+    if (score <= 25) return "transformation-aspirant"
+    if (score <= 50) return "growth-seeker"
+    if (score <= 75) return "tech-savvy-optimizer"
+    return "efficiency-champion"
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const score = calculateScore();
-    const category = getCategory(score);
+    e.preventDefault()
+    const score = calculateScore()
+    const category = getCategory(score)
 
     try {
       const response = await fetch("/api/submit-survey", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, answers, score, category }),
-      });
+      })
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.details || 'Failed to submit survey');
+        const data = await response.json()
+        throw new Error(data.details || 'Failed to submit survey')
       }
 
-      router.push(`/results/${category}`);
+      // Pass score as URL parameter
+      router.push(`/results/${category}?score=${score}`)
     } catch (error) {
-      const err = error as Error;
-      console.error("Error submitting survey:", err.message);
-      throw error;
+      const err = error as Error
+      console.error("Error submitting survey:", err.message)
+      throw error
     }
-  };
+  }
 
   const calculateProgress = () => {
     return showEmail ? 100 : ((currentQuestion + 1) / questions.length) * 100
@@ -271,13 +285,13 @@ export default function SurveyForm() {
                   className={`w-full p-4 text-left rounded-lg border transition-all duration-200 ${
                     (answers[currentQuestion] as string[] || []).includes(option.text)
                       ? 'bg-[#FF6B35] text-white border-[#FF6B35]'
-                      : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                      : 'bg-white text-gray-900 border-gray-200 hover:border-[#FF6B35]'
                   }`}
                 >
                   {option.text}
                 </button>
               ))}
-              <div className="flex justify-between pt-4">
+              <div className="flex justify-between mt-4">
                 <Button
                   type="button"
                   variant="outline"
@@ -286,14 +300,23 @@ export default function SurveyForm() {
                 >
                   Previous
                 </Button>
-                <Button
-                  type="button"
-                  onClick={handleNext}
-                  disabled={!(answers[currentQuestion] as string[] || []).length}
-                  className="bg-[#FF6B35] hover:bg-[#FF6B35]/90"
-                >
-                  Next
-                </Button>
+                {currentQuestion === questions.length - 1 ? (
+                  <Button
+                    type="button"
+                    onClick={() => setShowEmail(true)}
+                    className="bg-[#FF6B35] hover:bg-[#FF6B35]/90"
+                  >
+                    Submit
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    onClick={handleNext}
+                    className="bg-[#FF6B35] hover:bg-[#FF6B35]/90"
+                  >
+                    Next
+                  </Button>
+                )}
               </div>
             </div>
           ) : (
@@ -306,30 +329,31 @@ export default function SurveyForm() {
                   className={`w-full p-4 text-left rounded-lg border transition-all duration-200 ${
                     answers[currentQuestion] === option.text
                       ? 'bg-[#FF6B35] text-white border-[#FF6B35]'
-                      : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                      : 'bg-white text-gray-900 border-gray-200 hover:border-[#FF6B35]'
                   }`}
                 >
                   {option.text}
                 </button>
               ))}
-              <div className="flex justify-between pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handlePrevious}
-                  disabled={currentQuestion === 0}
-                >
-                  Previous
-                </Button>
-                {currentQuestion === questions.length - 1 && answers[currentQuestion] ? (
+              <div className="flex justify-between mt-4">
+                {currentQuestion > 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handlePrevious}
+                  >
+                    Previous
+                  </Button>
+                )}
+                {currentQuestion === questions.length - 1 && (
                   <Button
                     type="button"
                     onClick={() => setShowEmail(true)}
-                    className="bg-[#FF6B35] hover:bg-[#FF6B35]/90"
+                    className="bg-[#FF6B35] hover:bg-[#FF6B35]/90 ml-auto"
                   >
                     Submit
                   </Button>
-                ) : null}
+                )}
               </div>
             </div>
           )}
